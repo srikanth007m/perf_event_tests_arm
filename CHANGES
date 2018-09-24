@@ -1,0 +1,230 @@
+19 January 2015
++ Got lazy, see git changelog for changes
++ Released 0.29
+
+4 April 2014
++ Add a bunch of tests under tests/error_returns
+
+18 December 2013
++ re-arrange a lot of files
++ Fix some tests on ARM
++ add "exclusive" test
+
+28 October 2013
++ Add ioctl_period test
+
+11 October 2013
++ Add tests/error_returns/e2big
++ Move non-existent test to tests/error_returns
++ Move rdpmc tests to own directory
+
+18 September 2013
++ Fix breakpoint_support test that was broken by too-clever gcc 4.8
++ Release version 0.28
+
+17 September 2013
++ Re-organize files
++ add ioctl_id test
+
+9 September 2013
++ Add SAMPLE_BRANCH_STACK test
+
+8 August 2013
++ Add some recent exploits on ARM found in the fuzzer
+
+5 July 2013
++ Add sysfs test
+
+28 June 2013
++ Add ioctl_flag_group test
++ Add nmi_soft_lockup_test
+
++ All the fuzzer stuff
+
+22 May 2013
++ Add perf_mmap_close_bug
+
+30 April 2013
++ Added new offcore_response_mask test
++ Added crash test case for sw event overflow
+
+13 March 2013
++ Add multiple_mmap_sizes test
++ Add hw_sw_mix test
+
+29 January 2013
++ Add sw_start_leader test
+
+27 November 2012
++ Add simul_oneshot_group_overflow test
++ Release version 0.27
+
+26 November 2012
++ Add overflow_requires_wakeup test
+
+23 November 2012
++ Add wakeup_events_overflow test
+
+21 November 2012
++ Add single-shot overflow test
++ Add single_shot_w_enable
+
+4 November 2012
++ Make new validation_privileged category
+
+25 October 2012
++ Add uncore test
+
+14 September 2012
++ Add simultaneous_group_overflow test
++ Add simultaneous_overflow
+
+21 August 2012
++ Add check_reset_mpx test
+
+20 August 2012
++ Add multiplexing test
+
+16 August 2012
++ Add reset_leader test
+
+9 August 2012
++ Add enable_on_exec test
+
+7 August 2012
++ Add breakpoint test
++ Add some inherit tests
+
+13 July 2012
++ Fix rdpmc tests to not segfault if support not in kernel
++ Add a few tests
++ Release version 0.26
+
+21 December 2011
++ Add some rdpmc() tests
++ Release version 0.25
+
+8 September 2011
++ Re-arrange directory structure a bit
++ Add the corner_cases/signal_after_exec test
++ For corner cases now print results as OLD/NEW BEHAVIOR
++ Add the bugs/nmi_watchdog_group_leader test
++ Release version 0.24
+
+
+10 August 2011
++ Add branches ARM assembly thanks to sam wang.
+  This turned up a bug in Cortex A9 kernel generalized event.
++ Release version 0.23
+
+5 August 2011
++ Add a PAPI test that looks for a race condition when
+  we lookup/add events from multiple threads at once.
++ Release version 0.22
+
+3 August 2011
++ Minor fixes to crashes/oflo_sw_cpu_clock_crash
++ Some minor changes to OFFCORE_EVENTS while testing
+  some kernel patches.
++ Release version 0.21
+
+2 August 2011
++ Add ARM instruction test code
++ Add code to set the domain properly (exclude_kernel,user,hv all 0)
+  on ARMv7
++ Release version 0.20
+
+28 July 2011
++ Add oflo_sw_cpu_clock_crash crash code
++ Release version 0.19
+
+12 July 2011
++ Add check for ENOSPC being returned when buffers are too small
++ Release version 0.18
+
+5 July 2011
++ Finish cache detection infrastructure
++ Release version 0.17
+
+1 July 2011
++ Add cycles test
++ Fix non-existent test to skip if not supported
++ Add test to check if context-switches is kernel only
++ Release version 0.16
+
+28 June 2011
++ Now includes stubs for *all* PAPI predefined events.
++ Release version 0.15
+
+24 June 2011
++ Added more PAPI tests.  Most are placeholders.
++ Release version 0.14
+
+15 June 2011
++ Got all PAPI tests compiling
++ Release version 0.13
+
+10 June 2011
++ Some minor cleanups after running on a Istanbul and a Nehalem.
++ Work on some timing measurements.
++ Release version 0.12
+
+9 June 2011
++ Update more PAPI tests to compile with new setup.
++ Other minor fixes.
++ Release version 0.11
+
+8 June 2011
++ Import the PAPI vvtests.  Why not.
++ Add validation/branch-misses test
++ Release version 0.10
+
+7 June 2011
++ Fix name of l1-dcache-stores
++ Add simple l1-dcache-loads test
++ Release version 0.9
+
+6 June 2011
++ Add more hardcoded syscall numbers so we run on machines with
+  older headers (Power6 was the one giving me trouble)
++ More debugging in the overflow case.  Still chasing bugs
+  in 2.6.36/Power and 3.0-rc1
++ Make cache test more specific, properly program Cache events.
+  l1-dcache-writes.c
++ Release version 0.8
+
+27 May 2011
+
++ Fix the read_group_attached
++ Move the format_id test to be a validation test rather than bug
++ Add test to caution on using PERF_IO_REFRESH with 0 argument
++ Add cache-references test.
++ Release version 0.7
+
+26 May 2011
++ Add sync_read_required test
++ Fix check_schedulability to fail properly
++ Fix the papi_multiplex test.
++ Release version 0.6
+
+25 May 2011
++ Clean up code and separate assembly into their own directory
++ Add separate include and lib directory
++ Clean up Makefiles
++ Move run scripts to root of tree
++ Added a bunch more tests
++ Release version 0.5
+
+24 May 2011
++ Add "bugs" directory that reports on the status of less
+  critical bugs.
++ Added overflow_requires_mmap and sampled_notleader_refresh tests
++ Added validation/simple_overflow test
++ Release version 0.3
++ Add branches and instructions test
++ Release version 0.4
+
+18 May 2011
++ Finish crashes/pe_task_schedule_panic.c
++ Write some minimal documentation
++ Release version 0.2

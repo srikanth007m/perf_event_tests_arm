@@ -1,0 +1,16 @@
+The tests in this directory try to trigger the various errno
+returns from perf_event_open().
+
+See ../../doc/low_level_implementation/ERRORS.txt for more info
+
+TODO:
+	the same for the various perf-related ioctls
+
+Not covered:
+	ENOMEM	-- how to trigger out of memory?
+	EBUSY	-- can this get to userspace?
+	EAGAIN	-- can this get to userspace?
+	ENOTTY	-- ioctl only
+	ENOSYS	-- only if arch doesn't have CONFIG_HAVE_PERF_USER_STACK_DUMP
+	ENODEV	-- require unsupported hardware
+	

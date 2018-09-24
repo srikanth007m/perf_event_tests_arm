@@ -1,0 +1,311 @@
+<html>
+<head>
+<title>WARNING: CPU: 0 PID: 25574 at kernel/events/core.c:2384
+</title>
+</head>
+
+<body>
+
+<center>
+<h1>WARNING: CPU: 0 PID: 25574 at kernel/events/core.c:2384</h1>
+</center>
+
+<h3>Found by</h3>
+trinity / Dave Jones<br><br>
+later, by perf_fuzzer
+
+<h3>First Seen</h3>
+3.14-rc2
+
+<h3>Most recently Seen</h3>
+3.18
+
+<h3>Reproducible</h3>
+??
+
+<h3>Found On</h3>
+???, core2
+
+<h3>Analysis</h3>
+
+The bug davej is seeing is probably different than the one
+seen by perf_fuzzer, I should split this into two bug reports.
+
+
+<h3>Linux-kernel</h3>
+
+29 Jan 2014 -- <a href="http://permalink.gmane.org/gmane.linux.kernel/1648614">task_ctx_sched_out WARN_ON triggered.</a><br>
+24 April 2014 -- <a href="https://lkml.org/lkml/2014/4/24/460">return of perf task_ctx_sched_out bug.</a><br>
+22 May 2014 -- ye olde task_ctx_sched_out trace.<br>
+
+<h3>Kernel Splat</h3>
+
+<ol>
+<li>
+<pre>
+[  640.197874] ------------[ cut here ]------------
+[  640.200001] WARNING: CPU: 0 PID: 5336 at kernel/events/core.c:2478 task_ctx_sched_out+0x49/0x6e()
+[  640.200001] Modules linked in: cpufreq_userspace cpufreq_stats cpufreq_powersave cpufreq_conservative f71882fg mcs7830 usbnet evdev psmouse pcspkr serio_raw ohci_pci coretemp video wmi ohci_hcd button i2c_nforce2 acpi_cpufreq processor thermal_sys sg sd_mod ehci_pci ehci_hcd usbcore usb_common
+[  640.200001] CPU: 0 PID: 5336 Comm: perf_fuzzer Not tainted 3.18.0+ #166
+[  640.200001] Hardware name: AOpen   DE7000/nMCP7ALPx-DE R1.06 Oct.19.2012, BIOS 080015  10/19/2012
+[  640.200001]  00000000000009ae ffff8800bda9fbf8 ffffffff8155cf3b 00000000000009ae
+[  640.200001]  0000000000000000 ffff8800bda9fc38 ffffffff8104361b 0000000000000000
+[  640.200001]  ffffffff810d6759 ffffe8ffffc00910 ffff8800caeb6000 0000000000000000
+[  640.200001] Call Trace:
+[  640.200001]  [<ffffffff8155cf3b>] dump_stack+0x49/0x5e
+[  640.200001]  [<ffffffff8104361b>] warn_slowpath_common+0x81/0x9b
+[  640.200001]  [<ffffffff810d6759>] ? task_ctx_sched_out+0x49/0x6e
+[  640.200001]  [<ffffffff8104364f>] warn_slowpath_null+0x1a/0x1c
+[  640.200001]  [<ffffffff810d6759>] task_ctx_sched_out+0x49/0x6e
+[  640.200001]  [<ffffffff810dc157>] perf_event_exit_task+0xec/0x2e4
+[  640.200001]  [<ffffffff8104558b>] do_exit+0x40f/0x945
+[  640.200001]  [<ffffffff810dfc29>] ? unlock_page+0x5e/0x60
+[  640.200001]  [<ffffffff81102930>] ? do_wp_page+0x257/0x612
+[  640.200001]  [<ffffffff81045b39>] do_group_exit+0x78/0xa0
+[  640.200001]  [<ffffffff810501d6>] get_signal+0x47c/0x4a6
+[  640.200001]  [<ffffffff8100ac0f>] ? native_sched_clock+0x21/0x3e
+[  640.200001]  [<ffffffff81002616>] do_signal+0x28/0x6a3
+[  640.200001]  [<ffffffff8103908c>] ? do_page_fault+0xc/0xe
+[  640.200001]  [<ffffffff81561ac2>] ? page_fault+0x22/0x30
+[  640.200001]  [<ffffffff81002cbd>] do_notify_resume+0x2c/0x64
+[  640.200001]  [<ffffffff81560d27>] retint_signal+0x41/0x7a
+[  640.200001] ---[ end trace 21f7f78e53adf48c ]---
+[  668.228001] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 23s! [perf_fuzzer:4932]
+[  668.228001] Modules linked in: cpufreq_userspace cpufreq_stats cpufreq_powersave cpufreq_conservative f71882fg mcs7830 usbnet evdev psmouse pcspkr serio_raw ohci_pci coretemp video wmi ohci_hcd button i2c_nforce2 acpi_cpufreq processor thermal_sys sg sd_mod ehci_pci ehci_hcd usbcore usb_common
+[  668.228001] CPU: 0 PID: 4932 Comm: perf_fuzzer Tainted: G        W      3.18.0+ #166
+[  668.228001] Hardware name: AOpen   DE7000/nMCP7ALPx-DE R1.06 Oct.19.2012, BIOS 080015  10/19/2012
+[  668.228001] task: ffff8800c8022000 ti: ffff8800ca364000 task.ti: ffff8800ca364000
+[  668.228001] RIP: 0010:[<ffffffff810d7a60>]  [<ffffffff810d7a60>] perf_event_disable+0x95/0xbc
+[  668.228001] RSP: 0018:ffff8800ca367e78  EFLAGS: 00000202
+[  668.228001] RAX: 0000000000000001 RBX: ffffffff8109a620 RCX: 0000000000000000
+[  668.228001] RDX: 0000000000005f06 RSI: ffff8800ca367e38 RDI: ffff8800c8022000
+[  668.228001] RBP: ffff8800ca367eb8 R08: 0000000000000246 R09: 00007f4d89991120
+[  668.228001] R10: 00007f4d899910a4 R11: 0000000000000246 R12: ffff8800ca367e38
+[  668.228001] R13: ffffffff810d76ce R14: 0000000000000000 R15: 00007f4d89991120
+[  668.228001] FS:  00007f4d89ba7700(0000) GS:ffff88011fc00000(0000) knlGS:0000000000000000
+[  668.228001] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  668.228001] CR2: 000000000285ed68 CR3: 00000000ca26e000 CR4: 00000000000407f0
+[  668.228001] DR0: 0000000000000000 DR1: 000000000226e000 DR2: 0000000000000000
+[  668.228001] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000600
+[  668.228001] Stack:
+[  668.228001]  ffff880000000001 0000000000000002 ffff8800ca367eb8 ffffffff8155dff1
+[  668.228001]  0000000000000000 ffff8800cadca800 ffffffff810d79cb ffff8800caebc000
+[  668.228001]  ffff8800ca367ee8 ffffffff810d5c07 ffff8800cadca800 ffff8800c8022000
+[  668.228001] Call Trace:
+[  668.228001]  [<ffffffff8155dff1>] ? mutex_lock+0x16/0x37
+[  668.228001]  [<ffffffff810d79cb>] ? perf_event_refresh+0x33/0x33
+[  668.228001]  [<ffffffff810d5c07>] perf_event_for_each_child+0x6c/0x90
+[  668.228001]  [<ffffffff810d5c7b>] perf_event_task_disable+0x50/0x82
+[  668.228001]  [<ffffffff81050d25>] SyS_prctl+0x13d/0x3cb
+[  668.228001]  [<ffffffff81560016>] system_call_fastpath+0x16/0x1b
+[  668.228001] Code: 63 68 0d 81 e8 d9 fc ff ff 85 c0 74 3a 4c 89 e7 e8 94 80 48 00 8b 43 78 83 f8 01 75 10 66 41 83 04 24 01 fb 49 8b bd 88 00 00 00 <eb> cd 85 c0 75 0f 48 89 df e8 1a d5 ff ff c7 43 78 ff ff ff ff 
+
+^GMessage from syslogd@core2 at Dec  8 14:04:49 ...
+ kernel:[  668.228001] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 23s! [perf_fuzzer:4932]
+[  696.228001] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [perf_fuzzer:4932]
+[  696.228001] Modules linked in: cpufreq_userspace cpufreq_stats cpufreq_powersave cpufreq_conservative f71882fg mcs7830 usbnet evdev psmouse pcspkr serio_raw ohci_pci coretemp video wmi ohci_hcd button i2c_nforce2 acpi_cpufreq processor thermal_sys sg sd_mod ehci_pci ehci_hcd usbcore usb_common
+[  696.228001] CPU: 0 PID: 4932 Comm: perf_fuzzer Tainted: G        W    L 3.18.0+ #166
+[  696.228001] Hardware name: AOpen   DE7000/nMCP7ALPx-DE R1.06 Oct.19.2012, BIOS 080015  10/19/2012
+[  696.228001] task: ffff8800c8022000 ti: ffff8800ca364000 task.ti: ffff8800ca364000
+[  696.228001] RIP: 0010:[<ffffffff810d7a3e>]  [<ffffffff810d7a3e>] perf_event_disable+0x73/0xbc
+[  696.228001] RSP: 0018:ffff8800ca367e78  EFLAGS: 00000296
+[  696.228001] RAX: 00000000ffffffea RBX: ffffffff8109a620 RCX: 0000000000000000
+[  696.228001] RDX: ffff88011fc00000 RSI: ffff8800ca367e38 RDI: ffff8800ca367de8
+[  696.228001] RBP: ffff8800ca367eb8 R08: 0000000000000286 R09: 00007f4d89991120
+[  696.228001] R10: 00007f4d899910a4 R11: 0000000000000246 R12: ffff8800ca367e38
+[  696.228001] R13: ffffffff810d76ce R14: 0000000000000000 R15: 0000000000000246
+[  696.228001] FS:  00007f4d89ba7700(0000) GS:ffff88011fc00000(0000) knlGS:0000000000000000
+[  696.228001] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  696.228001] CR2: 000000000285ed68 CR3: 00000000ca26e000 CR4: 00000000000407f0
+[  696.228001] DR0: 0000000000000000 DR1: 000000000226e000 DR2: 0000000000000000
+[  696.228001] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000600
+[  696.228001] Stack:
+[  696.228001]  ffff880000000001 0000000000000002 ffff8800ca367eb8 ffffffff8155dff1
+[  696.228001]  0000000000000000 ffff8800cadca800 ffffffff810d79cb ffff8800caebc000
+[  696.228001]  ffff8800ca367ee8 ffffffff810d5c07 ffff8800cadca800 ffff8800c8022000
+[  696.228001] Call Trace:
+[  696.228001]  [<ffffffff8155dff1>] ? mutex_lock+0x16/0x37
+[  696.228001]  [<ffffffff810d79cb>] ? perf_event_refresh+0x33/0x33
+[  696.228001]  [<ffffffff810d5c07>] perf_event_for_each_child+0x6c/0x90
+[  696.228001]  [<ffffffff810d5c7b>] perf_event_task_disable+0x50/0x82
+[  696.228001]  [<ffffffff81050d25>] SyS_prctl+0x13d/0x3cb
+[  696.228001]  [<ffffffff81560016>] system_call_fastpath+0x16/0x1b
+[  696.228001] Code: 00 00 48 c7 45 c8 63 68 0d 81 48 89 5d d0 c7 45 d8 fa ff ff ff e8 74 2b fc ff eb 4d 48 89 da 48 c7 c6 63 68 0d 81 e8 d9 fc ff ff <85> c0 74 3a 4c 89 e7 e8 94 80 48 00 8b 43 78 83 f8 01 75 10 66 
+^GMessage from syslogd@core2 at Dec  8 14:05:17 ...
+ kernel:[  696.228001] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [pe
+rf_fuzzer:4932]
+[  701.780000] INFO: rcu_sched self-detected stall on CPU { 0}  (t=15000 jiffies
+ g=6340 c=6339 q=268)
+[  701.780001] Task dump for CPU 0:
+[  701.780001] perf_fuzzer     R  running task        0  4932   2703 0x00000008
+[  701.780001]  0000000000000000 ffff88011fc03d68 ffffffff81061c89 0000000000000
+000
+[  701.780001]  ffffffff81a3f340 ffff88011fc03d88 ffffffff81061ccd ffff88011fc03
+d88
+[  701.780001]  ffffffff81a3f340 ffff88011fc03db8 ffffffff81084ca0 ffffffff81a3f
+340
+[  701.780001] Call Trace:
+[  701.780001]  <IRQ>  [<ffffffff81061c89>] sched_show_task+0xc1/0xc6
+[  701.780001]  [<ffffffff81061ccd>] dump_cpu_task+0x3f/0x43
+[  701.780001]  [<ffffffff81084ca0>] rcu_dump_cpu_stacks+0x4f/0x91
+[  701.780001]  [<ffffffff81085f66>] rcu_check_callbacks+0x205/0x595
+[  701.780001]  [<ffffffff81046a92>] ? raise_softirq_irqoff+0x9/0x35
+[  701.780001]  [<ffffffff81088b16>] update_process_times+0x41/0x6a
+[  701.780001]  [<ffffffff81095e70>] tick_sched_handle+0x4a/0x59
+[  701.780001]  [<ffffffff81096057>] tick_sched_timer+0x5d/0x84
+[  701.780001]  [<ffffffff8108a6b7>] __run_hrtimer+0xba/0x145
+[  701.780001]  [<ffffffff81095ffa>] ? tick_nohz_handler+0xb6/0xb6
+[  701.780001]  [<ffffffff8108a91a>] hrtimer_interrupt+0xd5/0x1c3
+[  701.780001]  [<ffffffff8102d209>] local_apic_timer_interrupt+0x58/0x5d
+[  701.780001]  [<ffffffff8102d6b0>] smp_apic_timer_interrupt+0x2a/0x3c
+[  701.780001]  [<ffffffff81560eaa>] apic_timer_interrupt+0x6a/0x70
+[  701.780001]  <EOI>  [<ffffffff810d6863>] ? __perf_event_read+0xe5/0xe5
+[  701.780001]  [<ffffffff8105dbee>] ? task_curr+0x22/0x2a
+[  701.780001]  [<ffffffff810d7740>] task_function_call+0x29/0x53
+[  701.780001]  [<ffffffff810d6863>] ? __perf_event_read+0xe5/0xe5
+[  701.780001]  [<ffffffff810d7a3e>] perf_event_disable+0x73/0xbc
+[  701.780001]  [<ffffffff8155dff1>] ? mutex_lock+0x16/0x37
+[  701.780001]  [<ffffffff810d79cb>] ? perf_event_refresh+0x33/0x33
+[  701.780001]  [<ffffffff810d5c07>] perf_event_for_each_child+0x6c/0x90
+[  701.780001]  [<ffffffff810d5c7b>] perf_event_task_disable+0x50/0x82
+[  701.780001]  [<ffffffff81050d25>] SyS_prctl+0x13d/0x3cb
+[  701.780001]  [<ffffffff81560016>] system_call_fastpath+0x16/0x1b
+[  728.228001] NMI watchdog: BUG: soft lockup - CPU#0 stuck for 23s! [perf_fuzzer:4932]
+</pre>
+
+
+<li>
+<pre>
+*** perf_fuzzer 0.28 *** by Vince Weaver
+
+        Linux version 3.15.0-rc4+ x86_64
+        Processor: Intel 6/23/10
+
+        Seeding random number generator with 1399309111
+        /proc/sys/kernel/perf_event_max_sample_rate currently: 12500/s
+        /proc/sys/kernel/perf_event_paranoid currently: 1
+        Logging perf_event_open() failures: no
+        Running fsync after every syscall: no
+        To reproduce, try: ./perf_fuzzer -t OCIRMQWPFpAi -s 50000 -r 1399309111 
+
+Pid=25542, sleeping 1s
+==================================================
+Fuzzing the following syscalls:
+        mmap perf_event_open close read write ioctl fork prctl poll 
+*NOT* Fuzzing the following syscalls:
+
+Also attempting the following:
+        busy-instruction-loop accessing-perf-proc-and-sys-files trashing-the-mma
+p-page 
+*NOT* attempting the following:
+        signal-handler-on-overflow 
+==================================================
+Iteration 10000
+        Open attempts: 307759  Successful: 908
+                EPERM : 20
+                ENOENT : 881
+                E2BIG : 35526
+                EBADF : 5257
+                EINVAL : 264612
+                ENOSPC : 40
+                EOPNOTSUPP : 515
+        Close attempts: 888  Successful: 888
+        Read attempts: 826  Successful: 698
+        Write attempts: 907  Successful: 0
+        Ioctl attempts: 872  Successful: 390
+        Mmap attempts: 908  Successful: 240
+        Prctl attempts: 877  Successful: 877
+        Fork attempts: 450  Successful: 450
+        Poll attempts: 886  Successful: 2
+        Access attempts: 894  Successful: 424
+        Trash mmap attempts: 878  Successful: 878
+        Overflows: 0
+        SIGIOs due to RT signal queue full: 0
+[  804.032050] ------------[ cut here ]------------
+[  804.036004] WARNING: CPU: 1 PID: 26033 at kernel/events/core.c:2398 task_ctx_
+sched_out+0x49/0x6e()
+[  804.036004] Modules linked in: cpufreq_userspace cpufreq_stats cpufreq_powers
+ave cpufreq_conservative f71882fg mcs7830 usbnet evdev video wmi acpi_cpufreq oh
+ci_pci pcspkr psmouse button processor thermal_sys coretemp serio_raw ohci_hcd i
+2c_nforce2 sg ehci_pci ehci_hcd sd_mod usbcore usb_common
+[  804.036004] CPU: 1 PID: 26033 Comm: perf_fuzzer Tainted: G      D       3.15.
+0-rc4+ #44
+[  804.036004] Hardware name: AOpen   DE7000/nMCP7ALPx-DE R1.06 Oct.19.2012, BIO
+S 080015  10/19/2012
+[  804.036004]  000000000000095e ffff880039ac3c08 ffffffff81539016 0000000000000
+95e
+[  804.036004]  0000000000000000 ffff880039ac3c48 ffffffff8103fcb9 0000000000000
+000
+[  804.036004]  ffffffff810ca939 ffff88011fc95b08 ffff8800cbb6a010 0000000000000
+000
+[  804.036004] Call Trace:
+[  804.036004]  [<ffffffff81539016>] dump_stack+0x49/0x5b
+[  804.036004]  [<ffffffff8103fcb9>] warn_slowpath_common+0x81/0x9b
+[  804.036004]  [<ffffffff810ca939>] ? task_ctx_sched_out+0x49/0x6e
+[  804.036004]  [<ffffffff8103fced>] warn_slowpath_null+0x1a/0x1c
+[  804.036004]  [<ffffffff810ca939>] task_ctx_sched_out+0x49/0x6e
+[  804.036004]  [<ffffffff810d0111>] perf_event_exit_task+0xee/0x1fe
+[  804.036004]  [<ffffffff8105e91c>] ? switch_task_namespaces+0x1d/0x51
+[  804.036004]  [<ffffffff81041bb6>] do_exit+0x400/0x942
+[  804.036004]  [<ffffffff810f3d50>] ? do_read_fault+0x169/0x263
+[  804.036004]  [<ffffffff810d3b51>] ? unlock_page+0x27/0x2c
+[  804.036004]  [<ffffffff81042170>] do_group_exit+0x78/0xa0
+[  804.036004]  [<ffffffff8104f378>] get_signal_to_deliver+0x46d/0x48a
+[  804.036004]  [<ffffffff810bc037>] ? function_trace_call+0xc8/0xf2
+[  804.036004]  [<ffffffff81002526>] do_signal+0x46/0x5e8
+[  804.036004]  [<ffffffff810b8279>] ? __trace_buffer_unlock_commit+0x3c/0x44
+[  804.036004]  [<ffffffff8100c176>] ? ftrace_raw_event_sys_exit+0x4a/0x72
+[  804.036004]  [<ffffffff81002af4>] do_notify_resume+0x2c/0x64
+[  804.036004]  [<ffffffff8153c235>] retint_signal+0x3d/0x78
+[  804.036004] ---[ end trace 6cadd738b5f7eb96 ]---
+</pre>
+<li>
+<pre>
+WARNING: CPU: 0 PID: 25574 at kernel/events/core.c:2384 task_ctx_sched_out+0x6b/0x80()
+Modules linked in: 8021q garp dccp_ipv4 dccp bridge stp snd_seq_dummy sctp fuse hidp bnep tun rfcomm llc2 af_key nfnetlink scsi_transport_iscsi ipt_ULOG can_bcm can_raw nfc caif_socket caif af_802154 ieee802154 phonet af_rxrpc can pppoe pppox ppp_generic slhc irda crc_ccitt rds rose x25 atm netrom appletalk ipx p8023 psnap p8022 llc ax25 cfg80211 coretemp hwmon x86_pkg_temp_thermal kvm_intel kvm snd_hda_codec_hdmi snd_hda_codec_realtek snd_hda_codec_generic snd_hda_intel snd_hda_controller xfs snd_hda_codec snd_hwdep e1000e libcrc32c crct10dif_pclmul snd_seq snd_seq_device crc32c_intel snd_pcm btusb bluetooth ghash_clmulni_intel snd_timer snd ptp pcspkr pps_core serio_raw microcode shpchp 6lowpan_iphc usb_debug rfkill soundcore
+CPU: 0 PID: 25574 Comm: trinity-c76 Not tainted 3.15.0-rc2+ #197
+ 0000000000000009 000000006f572b93 ffff8802389b3df0 ffffffff8b74671d
+ 0000000000000000 ffff8802389b3e28 ffffffff8b06d45d ffff8802441d7ad8
+ ffff880111e6adf0 0000000000000286 ffff88023fb8b5c0 ffff880111e6adf0
+Call Trace:
+ [<ffffffff8b74671d>] dump_stack+0x4e/0x7a
+ [<ffffffff8b06d45d>] warn_slowpath_common+0x7d/0xa0
+ [<ffffffff8b06d58a>] warn_slowpath_null+0x1a/0x20
+ [<ffffffff8b14f6eb>] task_ctx_sched_out+0x6b/0x80
+ [<ffffffff8b152988>] perf_event_comm+0x108/0x260
+ [<ffffffff8b152880>] ? perf_event_fork+0x20/0x20
+ [<ffffffff8b0bf746>] ? lock_release_holdtime.part.24+0xe6/0x160
+ [<ffffffff8b0a3ccd>] ? get_parent_ip+0xd/0x50
+ [<ffffffff8b1ce63f>] set_task_comm+0x4f/0xc0
+ [<ffffffff8b086829>] SyS_prctl+0x1d9/0x480
+ [<ffffffff8b75aa64>] tracesys+0xdd/0xe2
+</pre>
+<li>
+<pre>
+WARNING: CPU: 0 PID: 12579 at kernel/events/core.c:2539 task_ctx_sched_out+0x503/0x8a0()
+Modules linked in: nf_conntrack_netlink nf_conntrack pn_pep llc2 af_key rfcomm bnep snd_seq_dummy tun fuse hidp nfnetlink scsi_transport_iscsi can_raw can_bcm ipt_ULOG nfc caif_socket caif af_802154 phonet af_rxrpc can pppoe pppox ppp_generic slhc irda crc_ccitt rds rose x25 atm netrom appletalk ipx p8023 psnap p8022 llc ax25 cfg80211 snd_hda_codec_hdmi xfs snd_hda_codec_realtek coretemp hwmon snd_hda_codec_generic x86_pkg_temp_thermal snd_hda_intel kvm_intel snd_hda_codec kvm btusb snd_hwdep bluetooth snd_seq snd_seq_device crct10dif_pclmul snd_pcm crc32c_intel e1000e ghash_clmulni_intel 6lowpan_iphc libcrc32c microcode rfkill snd_timer serio_raw pcspkr usb_debug shpchp snd ptp soundcore pps_core
+CPU: 0 PID: 12579 Comm: trinity-c5 Not tainted 3.14.0-rc2+ #117
+ 0000000000000009 0000000044d442b6 ffff88009e1b7de0 ffffffff9972b1d1
+ 0000000000000000 ffff88009e1b7e18 ffffffff9906d0cd ffff88024d017700
+ ffff8801185e5898 0000000000000282 ffff88023a892e60 ffff8801185e5898
+Call Trace:
+ [<ffffffff9972b1d1>] dump_stack+0x4e/0x7a
+ [<ffffffff9906d0cd>] warn_slowpath_common+0x7d/0xa0
+ [<ffffffff9906d1fa>] warn_slowpath_null+0x1a/0x20
+ [<ffffffff991458f3>] task_ctx_sched_out+0x503/0x8a0
+ [<ffffffff99148ea8>] perf_event_comm+0x108/0x260
+ [<ffffffff99148da0>] ? perf_event_fork+0x20/0x20
+ [<ffffffff991c4c95>] ? set_task_comm+0x25/0xc0
+ [<ffffffff990a4f0d>] ? get_parent_ip+0xd/0x50
+ [<ffffffff991c4cbf>] set_task_comm+0x4f/0xc0
+ [<ffffffff99086ecb>] SyS_prctl+0x22b/0x3d0
+ [<ffffffff9973ea2a>] tracesys+0xd4/0xd9
+</pre>
+</ol>
+
+
+<hr>
+<a href="bugs_found.html">Back to perf_fuzzer bugs found</a>
+
+</body>
+</html>

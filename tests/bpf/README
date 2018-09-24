@@ -1,0 +1,34 @@
+Needed 4.9-rc kernel, plus debugfs mounted
+sudo /home/vince/research/linux-kernel/linux-git/tools/perf/perf record -v -v -v -a -e bpf-output/no-inherit,name=evt/ -e ./test_bpf_output.c/map:channel.event=evt/ ls /
+
+
+Need libelf-dev and libdwarf-dev installed before perf will compile
+with BPF support.  Otherwise you get obnoxious
+	BPF support is not compiled
+message
+
+/home/vince/research/linux-kernel/linux-2.6/tools/perf/perf 
+record -a -e bpf-output/no-inherit/ 
+-e ./test_bpf_output.c/maps:channel:event=evt/ ls /
+
+run as root
+
+still get
+	Failed to load program for unknown reason
+
+
+
+Generating BPF files is a pain.
+
+They are architecture specific and have to be re-built each time
+you re-build the kernel.
+
+Also you need a version of the clang compiler to build them.
+
+The sample code in this directory is from a lkml posting
+	Date: Fri, 15 May 2015 17:20:42 +0800
+	From: "Wangnan (F)" <wangnan0@huawei.com>
+	Subject: Re: [BUG] kernel panic after bpf program removed.
+
+You will need CLANG 3.7 or newer.  You can get nightly snapshots for
+	Debian from http://llvm.org/apt/

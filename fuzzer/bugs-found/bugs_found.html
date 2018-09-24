@@ -1,0 +1,652 @@
+<html>
+<head><title>perf_event bugs found in the Linux kernel</title></head>
+
+<body>
+
+<center><h1>Linux Kernel perf_event bugs</h1></center>
+<center><h2>Many of these found by the perf_fuzzer (as noted)</h2></center>
+
+<hr><hr>
+
+<h3>Current Status></h3>
+<ul>
+<li>ARM32 -- chugs along for days on a pi2 (4.8-rc2)
+<li>x86/intel -- multiple warnings.
+	<ul>
+	<li>pentium4 -- 4.9-rc1 crashes more or less immediately
+	<li>core2 -- 4.9-rc1 crashes paranoid 1 and lower
+	<li>haswell -- 4.9-5c5 will crash in a day or so
+	<li>skylake -- 4.9-rc6 will crash in a day or so
+	</ul>
+<li>x86/amd -- 4.9-rc7 -- chugs along for over a week?
+<li>sparc -- newest kernel I can run is 3.2, but locks up
+	more or less immediately
+</ul>
+
+<hr>
+
+
+
+<h3>Current Crashes (reproducible):</h3>
+<ul>
+<li><a href="4.8-rc2.amd_nb_bug.html">
+	4.8-rc2 amd_nb BUG</a>
+<li><a href="4.4-rc4.amd_ibs_crash.html">
+    4.4-rc4 AMD IBS crash</a>
+<li><a href="3.17-rc6.arm64_stall.html">
+    4.4-rc4 ARM/ARM64 RCU stall</a>
+<li><a href="3.19-rc5.haswell_x86_pmu_del_warning.html">
+    3.19-rc5 haswell pmu_del() warning/lockup</a>
+<li><a href="3.17-rc7.put_ctx_lockup.html">
+    3.17-rc7 put_ctx lockup</a>
+<li><a href="3.17-rc6.do_IRQ_overflown.html">
+    3.17-rc6 do_IRQ overflown stack</a>
+</ul>
+
+<h3>Current Crashes (not reproducible):</h3>
+<ul>
+<li><a href="3.14-rc.null_constraint.html">
+	(crash) 4.1.0-rc2 NULL pointer in constraint table</a>
+<li><a href="4.1.0-rc1-next.perf_event_ctx_lock.html">
+	(crash) 4.1.0-rc1-next ctx_lock deadlock</a>
+<li><a href="3.19.0+.x86_pmu_event_init_crash.html">
+	(crash) 4.0-rc1+ x86_pmu_event_init() hang</a>
+<li><a href="3.14-rc6.x86_schedule_events.html">
+	(crash) 4.1-rc0 x86_schedule_events</a>
+</ul>
+
+<h3>Current Crashes (unknown if reproducible):</h3>
+<ul>
+<li><a href="4.9-rc0.p4_nmi.html">
+	(crash) 4.9-rc0 pentium 4 NMI</a>
+<li><a href="4.8-rc1.haswell_spinlock_hang.html">
+	(bug) 4.8-rc1 spinlock bug</a>
+<li><a href="3.19-next.perf_mmap_gpf.html">
+	(crash) 3.19-next perf_event_mmap() gpf</a>
+<li><a href="3.2-sparc.bad_page.html">
+	(crash) 3.2-sparc.bad_page </a>
+</ul>
+
+<h3>Current Warnings (reproducible):</h3>
+<ul>
+<li><a href="4.9-rc5.kasan_unwind.html">
+	(warning) 4.9-rc5 KASAN stack-out-of-bounds in unwind_next_frame</a>
+<li><a href="4.9-rc1.overlap_scheduling.html">
+	(warning) 4.9-rc1 overlap scheduling</a>
+<li><a href="4.9-rc1.uncore_get_constraint.html">
+	(warning) 4.9-rc1 uncore_get_constraint lockdep</a>
+<li><a href="4.8-rc1.haswell_event_function_local.html">
+	(warning) 4.8-rc1 event function local warning</a>
+<li><a href="3.15-rc1.irq_loop_warning.html">
+	(warning) 4.8-rc1 irq loop Warning</a>
+<li><a href="4.1-rc2.x86_pmu_start_warning.html">
+	(warning) 4.8-rc1 x86_pmu_start_warning</a>
+<li><a href="3.19.0+.breakpoint_warning.html">
+	(warning) 4.5-rc0 breakpoint warning</a>
+<li><a href="4.2-rc1.kprobe_warnings.html">
+	(warning) 4.2-rc1 kprobe warnings</a>
+<li><a href="4.1-rc7.warning_perf_aux_output_begin.html">
+	(warning) 4.2-rc0 perf_aux_output_begin()</a>
+<li><a href="3.12.core2_nmi_flood.html">
+	(warning) 4.2-rc0 nmi_flood messages</a>
+<li><a href="3.15-rc4.p4_x86_pmu_start_stop_warning.html">
+	(warning) 3.15-rc4 p4 x86_pmu_start/stop warnings</a>
+</ul>
+
+<h3>Current Warnings (unknown if reproducible):</h3>
+<ul>
+<li><a href="4.8-rc1.haswell_rb_free_aux.html">
+	(warning) 4.9-rc5 rb_free_aux</a>
+<li><a href="4.9-rc5.haswell_perf_mmap_close.html">
+	(warning) 4.9-rc5 perf_mmap_close.html</a>
+<li><a href="4.2-rc0.x86_pmu_stop_warning.html">
+	(warning) 4.9-rc0 x86_pmu_stop_warning</a>
+<li><a href="4.8-rc3.perf_read_warn.html">
+	(warning) 4.8-rc3 haswell perf_read</a>
+<li><a href="4.8-rc1.haswell_slab_bitflip.html">
+	(slab corruption) 4.8-rc1 haswell slab corruption</a>
+<li><a href="4.8-rc1.haswell_disable_gpf.html">
+	(GPF) 4.8-rc1 haswell disable gpf</a>
+<li><a href="4.2-rc0.intel_pmu_drain_pebs_nhm_warning.html">
+	(warning) 4.4-rc4 intel_pmu_drain_pebs_nhm_warning.html</a>
+<li><a href="4.1-rc2.kill_fasync.html">
+	(warning) 4.1-rc2 kill_fasync triggers watchdog</a>
+</ul>
+
+
+<h3>Current correctness Issues:</h3>
+<ul>
+<li>
+</ul>
+
+<hr>
+
+<h2>Older Issues.  May have been fixed; have not encountered recently.</h2>
+
+
+<h3>Older Crashes (not easily reproducible):</h3>
+<ul>
+<li><a href="3.15-rc5.get_cpu_context_gpf.html">
+    3.15-rc7 get_cpu_context GPF</a>
+<li><a href="3.15-rc1.perf_swevent_del_bug.html">
+    3.15-rc-next perf_swevent_del bug</a>
+<li><a href="3.14-rc5.perf_event_overflow.html">
+    3.14-rc5.perf_event_overflow bug</a>
+<li><a href="3.15-rc3.kvm_mmap_corruption.html">
+    3.15-rc-next KVM perf_mmap corruption</a>
+<li><a href="3.15-next.perf_remove_from_context_gpf.html">
+    3.15-rc-next perf_remove_from_context() gpf</a>
+<li><a href="3.14-rc8.perf_event_exit_task_lockdep.html">
+    3.14-rc8 perf_event_exit_task lockdep</a>
+<li><a href="3.14-rc1.x32_filp_reboot.html">
+    3.14-rc1 x32 oops reboot in filp</a>
+<li><a href="3.13.task_output.html">
+    3.13 task_output lockup</a>
+<li><a href="3.12.bad_page_map.html">
+    3.12 perf ext4 vma error</a>
+</ul>
+
+<h2>Older Warnings (not easily reproducible):</h2>
+<ul>
+<li><a href="3.15-rc5.mutex_lock_nested.html">
+    3.15-rc5 mutex_lock_nested</a>
+<li><a href="3.14.perf_event_1076_warning.html">
+    3.15-rc4 perf_event.c:1076 Warning x86_pmu_start()</a>
+<li><a href="3.15-rc2.kernel_events_2384_warning.html">
+    3.15-rc2 kernel/events/core.c:2384 Warning</a>
+<li><a href="3.14-rc3.perf_event_1158_warning.html">
+    3.14 perf_event.c:1158 Warning</a>
+<li><a href="3.14-rc.kernel_event_core_5659_warning.html">
+    3.14-rc kernel/event/core:5659 warning</a>
+</ul>
+
+<hr><hr>
+
+<h2>Fixed bugs:</h2>
+
+<h3>Fixed in 4.17</h3>
+
+	<ul>Found with syzkaller syzbot,
+		 Fix sample_max_stack maximum check		
+		5af44ca53d019de47efe6dbc4003dd518e5197ed
+	<li>armv8, perf/core: Fix perf_output_read_group()
+		9e5b127d6f33468143d90c8a45ca12410e4c3fa7
+	</ul>
+
+<h3>Fixed in 4.16</h3>
+	<ul>
+	<li>Francis Deslauriers:
+		Subject	[PATCH 0/1] x86/kprobes: Prohibit probing of .entry_trampoline code
+		Mentions found with fuzzer, did not say which one.
+	</ul>
+
+<h3>Fixed in 4.15</h3>
+	<ul>
+	<li>Change to kernel left Haswell-EX using wrong msr registers
+		for RAPL.  Found with perf_fuzzer by Kan Liang.
+		Fixed by 1289e0e29857e606a70a0200bf7849ae38d3493a
+	<li>The KPTI (meltdown) fixes led to various issues.
+		Intel BTS in particular led to instant crashes.
+		Temporarily fixed by
+		99a9dc98ba52267ce5e062b52de88ea1f1b2a7d8
+	</ul>
+
+<h3>Fixed in 4.13</h3>
+	<ul>
+	<li>pmu::read() called erroneously in v4.13-rc{3,4}
+		Found with perf_fuzzer by Mark Rutland on ARM64.
+		https://lkml.org/lkml/2017/8/10/742
+		Fix never committed for this?  Double check.
+	</ul>
+
+<h3>Fixed in 4.11</h3>
+	<ul>
+
+	<li>perf/core: Fix use-after-free in perf_release()
+		e552a8389aa409e257b7dcba74f67f128f979ccc
+		Found with syzkaller by Dmitry Vyukov
+	<li>perf/core: Fix the perf_cpu_time_max_percent check
+		1572e45a924f254d9570093abde46430c3172e3d
+		Found with perf_fuzzer by Tan Xiaojun
+	</ul>
+
+<h3>Fixed in 4.10</h3>
+	<ul>
+
+	<li>perf: Fix concurrent sys_perf_event_open() vs. 'move_group' race
+		321027c1fe77f892f4ea07846aeae08cefbbb290
+		CVE-2017-6001
+		While not explicitly said to be found with a fuzzer, it's
+		definitely the kind of bug a fuzzer makes easy to find.		
+		Didn't ask for confirmation as this is another one of those
+		mysterious hackers who doesn't believe in e-mail but is 
+		OK having a twitter account.
+	<li>perf/x86/intel: Account interrupts for PEBS errors
+		Found by Jiri Olsa
+		(475113d937adfd150eb82b5e2c5507125a68e7af)
+	<li>perf/x86: Fix overlap counter scheduling bug
+		Found by Jiri Olsa, presumaby with perf_fuzzer
+		(1134c2b5cb840409ffd966d8c2a9468f64e6a494)
+	</ul>
+
+<h3>Fixed in 4.9</h3>
+	<ul>
+	<li><a href="4.9-rc5.kasan_token.html">
+		(warning) 4.9-rc5 KASAN global-out-of-bounds in match_token</a>
+		(e96271f3ed7e702fa36dd0605c0c5b5f065af816)
+	<li>powerpc: Don't call perf_event_disable() from atomic context
+		(trinity)
+		(5aab90ce1ec449912a2ebc4d45e0c85dac29e9dd)
+	<li><a href="4.9-rc5.kasan_imc_uncore.html">
+		(kasan) 4.9-rc5 BUG: KASAN: slab-out-of-bounds in snb_uncore_imc_event_del
+		(c499336cea8bbe15554c6fcea2138658c5395bfe)
+		</a>
+	<li><a href="4.9-rc1.vmalloc_fault.html">4.9-rc1 vmalloc
+		stack unwinder crash</a>
+		(7fbe6ac02485504b964b283aca62b36b4313ca79)
+	</ul>
+
+<h3>Fixed in 4.8</h3>
+	<ul>
+	<li><a href="4.8-rc0.haswell_perf_cgroup_attach.html">
+		(crash) 4.8-rc0 perf_cgroup_attach</a>
+		(0b8f1e2e26bfc6b9abe3f0f3faba2cb0eecb9fb9)
+	</ul>
+
+<h3>Fixed in 4.6</h3>
+	<ul>
+	<li>(minor) perf/core: Fix dynamic interrupt throttle
+		(91a612eea9a316c464cc170ff8492ec09e7d1c69)
+	</ul>
+
+<h3>Fixed in 4.5</h3>
+	<ul>
+	<li>(panic) hw_breakpoint: Fix Oops at destroying hw_breakpoint 
+		event on powerpc
+		(fb822e6076d972691c5dd33431)
+	</ul>
+
+<h3>Fixed in 4.2</h3>
+	<ul>
+	<li><a href="4.2-rc0.intel_pmu_lbr_disable_warning.html">
+		(warning) intel_pmu_lbr_disable_warning.html</a>
+	<li><a href="4.1-rc7.aux_spinlock_recursion.html">
+		(crash) 4.2-rc0 AUX related spinlock recursion</a>
+	<li><a href="4.1-rc8.warning_replace_preds.html">
+		(warning) 4.1-rc8 trace replace_preds()</a>
+	</ul>
+
+<h3>Fixed in 4.1</h3>
+	<ul>
+	<li><a href="4.1-rc7.warning_replace_preds.html">
+	(warning) 4.1-rc7 trace replace_preds()</a>
+	<li><a href="3.19.0+.snb_uncore_imc_event_start_crash.html">
+	(crash) 3.19.0+ snb_uncore_imc_event_start crash</a>
+	<li><a href="4.0-rc2.arm_group.html">
+	(crash) 4.0-rc2 arm/arm64 validate group spanning PMUs
+	CVE-2015-8955</a>
+	</ul>
+
+<h3>Fixed in 4.0</h3>
+	<ul>
+	<li><a href="3.19.0+.perf_callchain_hang.html">
+	(crash) 4.0-rc1 perf_callchain() hang </a>
+	<li><a href="4.0-rc1.perf_mem_leak.html">
+	(mem leak) 4.0-rc1 mem leak in put_event() ctx leak fix</a>
+	<li><a href="3.19-next.add_event_to_context_warning.html">
+	(warning) 3.19-next add_event_to_context() warning</a>
+	</ul>
+
+<h3>Fixed in 3.19</h3>
+	<ul>
+	<li><a href="3.19-rc6.perf_remove_from_context_hang.html">
+	(crash) 3.19-rc6 perf_remove_from_context() hang</a>
+	<li><a href="3.15-rc7.find_get_context_hang.html">
+	(crash) 3.19-rc5 find_get_context() hang</a>
+	<li><s><a href="3.14-rc6.x86_schedule_events.html">
+	(crash) 3.19-rc5 x86_schedule_events</a></s>
+	<li><a href="3.19-rc5.rapl_scale_crash.html">
+	(crash) 3.19-rc5 rapl_scale_crash</a>
+	<li><a href="3.14-rc5.breakpoint_warning.html">
+	(warning) 3.15-rc4 breakpoint warning</a>	
+	<li><a href="3.17-rc7.bug_uncore_assign_events.html">
+	(bug) 3.17-rc IVB-EP uncore assign events BUG</a>
+	</ul>
+
+<h3>Fixed in 3.18</h3>
+	<ul>
+	<li><a href="3.17+.0day-bug.html">(bug) 3.17-next issue caught by trinity</a>
+	</ul>
+
+<h3>Fixed in 3.17</h3>
+	<ul>
+	<li><a href="3.17-rc4.core2_reboot.html">(reboot) 3.17-rc4 insta-reboot</a>
+	</ul>
+
+<h3>Fixed in 3.16</h3>
+	<ul>
+	<li><a href="3.15-rc.flag_range_check.html">(correctness) No error on invalid high bits in flags </a>
+	</ul>
+
+<h3>Fixed in 3.15</h3>
+
+	<ul>
+	<li><a href="3.15-memory-corruption.html">(crash) perf/fork memory leak issue</a>
+	<li><a href="3.15-rc4.perf_event_init_context_oops.html">(crash) 3.15-rc4 perf_event_init_context() oops</a>
+	<li><a href="3.15-rc1.sample_period_overflow.html">(correctness) sample_period 64-bit signed/unsigned overflow</a>
+	</ul>
+
+<h3>Fixed in 3.14</h3>
+	<ul>
+	<li><a href="3.14-rc3.cr2_corruption.html">(segfaults)
+		double-fault/corrupted cr2 causing weird segfaults</a>
+	<li><a href="3.3.perf_event_1076_warning.html">(warning) long-standing
+	perf_event.c:1076 WARNING</a>
+	</ul>
+
+<hr>
+
+
+<h3>Fixed in 3.13</h3>
+
+	<ul>
+	<li><b>perf ftrace function tracer permission lockup</b>
+		<br><br>
+		perf/ftrace: Fix paranoid level for enabling function tracer
+		<br><br>
+		This one took months to isolate and track down.
+  		ftrace function tracing can spend so much time in the kernel
+		that the kernel gets wedged and for all intents and purposes locks up.
+		The ftrace people dragged their feet on this one for months.
+		<br><br>
+		Reported-by: Vince Weaver, Dave Jones
+		<br><br>
+		Fixed-by-Commit: 12ae030d54ef250706da5642fc7697cc60ad0df7 (in 3.13)
+		<br><br>
+		CVE-2013-2930
+		<br><br>
+		Found by trinity and perf_fuzzer, it is trivially easy
+		for a plain user to lock the kernel due to an improper
+		check for root permissions in the ftrace code.
+		<br><br>
+	<li><b>Tracepoint aliasing issue</b>
+		<br><br>
+		Linux-kernel: <a href="https://lkml.org/lkml/2013/11/15/346">
+		15 November 2013 -- [patch] perf/trace properly use u64 to hold event_id</a>
+		<br><br>
+		Reported-by: Vince Weaver (noticed in fuzzer trace)
+		<br><br>
+		Fixed-by-Commit: 0022cedd4a7d8a87841351e2b018bb6794cf2e67 (in 3.13-rc3)
+		<br><br>
+	<li><b>Alpha bug found by perf_fuzzer</b>
+		<br><br>
+		alpha: perf: fix out-of-bounds array access triggered from raw event
+		<br><br>
+		Reported-by: Will Deacon
+		<br><br>
+		Fixed-by-Commit: 6e22f8f2e8d81dcab4c40bc229d53388fda63dbc (in 3.13)
+		<br><br>
+	</ul>
+
+<hr>
+
+<h3>Fixed in 3.11</h3>
+	<ul>
+	<li><b>ARM: 7810/1: perf: Fix array out of bounds access in armpmu_map_hw_event()</b>
+		<br><br>
+		Found by perf_fuzzer.
+		<br><br>
+		Reported-by: Vince Weaver
+		<br><br>
+		Fixed-by-Commit: d9f966357b14e356dbd83b8f4a197a287ab4ff83
+		<br><br>
+		Introduced with Linux 3.2 with 8a16b34e2119
+		<br><br>
+	<li><b>CVE 2013-4254: ARM and ARM64 oops in validate event</b>
+		<br><br>
+		ARM: 7809/1: perf: fix event validation for software group leaders
+		<br><br>
+		Reported-by: Vince Weaver
+		<br><br>
+		Fixed-by-Commit: c95eb3184ea1a3a2551df57190c81da695e2144b
+		<br><br>
+		Found by perf_fuzzer.
+		<br><br>
+		This bug is potentially a local root exploit, but as far
+		as I can tell there was an extremely narrow window of time
+		where it was easy to exploit (from 3.11-rc1 through 3.11-rc6)
+		<br><br>
+		Introduced  with Linux 3.2 with 8a16b34e2119
+		<br><br>
+	<li><b>arm64: perf: fix array out of bounds access in armpmu_map_hw_event()</b>
+		<br><br>
+		Reported-by: Will Deacon
+		<br><br>
+		Fixed-by-Commit: 868f6fea8fa63f09acbfa93256d0d2abdcabff79
+		<br><br>
+	<li><b>arm64: perf: fix event validation for software group leaders</b>
+		<br><br>
+		Reported-by: Will Deacon
+		Fixed-by-Commit: ee7538a008a45050c8f706d38b600f55953169f9
+		<br><br>
+	<li><a href="3.10-rc5.kernel_events_2122_warning.html">
+		WARNING: at kernel/events/core.c:2122</a>
+	</ul>
+<hr>
+
+<h3>Fixed in 3.10</h3>
+	<ul>	
+	<li><b>perf: Fix mmap() accounting hole</b>
+		<br><br>
+		Reported-and-tested-by: Vince Weaver
+		<br><br>
+		Fixed-by-Commit: 9bb5d40cd93c9dd4be74834b1dcb1ba03629716b
+		<br><br>
+		Denial of service.
+		<br><br>
+		Found by perf_fuzzer, it happens if you
+		do some complicated event setup involving mmap buffers
+		and then exiting.
+		<br><br>
+		Introduced sometime between 3.0 and 3.2?
+		<br><br>
+	<li><b>perf: Fix perf mmap bugs</b>
+		<br><br>
+		Reported-by: Vince Weaver
+		<br><br>
+		Fixed-by-Commit: 26cb63ad11e04047a64309362674bcbbd6a6f246
+		<br><br>
+	</ul>
+
+
+<hr>
+
+<h3>Fixed in 3.9</h3>
+	<ul>
+	<li><b>CVE-2013-2094 : Software Event u64/u32 Problem</b>
+		<br><br>
+		Local root exploit.
+		<br><br>
+		Found by trinity, this panic is 
+		caused by setting attr.config too high for software events,
+		and it wasn't caught due to a 32/64-bit check?
+		<br><br> 
+		Introduced in commit b0a873ebb ("perf: Register PMU implementations").
+		<br><br>
+		Patch that fixes is:                                                
+		[PATCH] perf: treat attr.config as u64 in perf_swevent_init()       
+		vulnerable through 3.9                                              
+		<br><br>
+		Fixed in 8176cced706b5e5d15887584150764894e94e02f
+		<br><br>
+	<li><b>offcore_response_mask</b>
+		<br><br>
+		Denial of service
+		<br><br>
+		On Sandybrige and Ivybridge the offcore events were not properly
+		masked to avoid setting reserved bits.
+		This could potentially cause a GPF but
+		I have not been able to cause one with a 3.8 kernel.
+		<br><br>
+		Fixed in f1923820c447e986a9da0fc6bf60c1dccdf0408e
+		<br><br>
+	<li><b>perf,x86: fix kernel crash with PEBS/BTS after suspend/resume</b>
+		<br><br>
+		Denial of service
+		<br><br>
+		Fixed in 1d9d8639c063caf6efc2447f5f26aa637f844ff6
+		<br><br>
+  		The test involves suspending/resuming while perf is being used,
+ 		and there's not a good way to automate such a test.
+		<br><br>
+	</ul>
+<hr>
+
+<h3>Fixed in 3.5 (pre-dates perf_fuzzer)</h3>
+
+	<ul>
+	<li><b>CGROUP reference counting problem</b>
+		<br><br>
+		Fixed by changeset: 9c5da09d266ca9b3
+	</ul>
+<hr>
+
+<h3>Fixed in 3.2 (pre-dates perf_fuzzer)</h3>
+
+	<ul>
+	<li><b>SLUB problem</b>
+		<br><br>
+		Linux 3.1.4 and 3.1.5 hard lock or panic when under high perf_event
+		load if SLUB is enabled rather than SLAB.  See full details in
+		this thread: <a href="https://lkml.org/lkml/2011/12/16/463">		
+		perf_event hard locks in 3.1.5</a>.  Still no resolution; git-bisect
+		was inconclusive.
+		<br><br>
+	</ul>
+
+<hr>
+
+<h3>Fixed in 3.1 (pre-dates perf_fuzzer)</h3>
+
+	<ul>
+	<li><b>CVE 2011-2918: Software Event Overflow Bug</b>
+		<br><br>
+		Denial of service.
+		<br><br>
+		An error with overflows and perf::perf_count_sw_cpu_clock (and probably
+		any software event) will cause your test to either become unkillable, 
+		or else hard lock your system.  Sometimes generates a
+		WARN_ON first.  Affects Linux 2.6.32 - 3.0.0.
+		<br><br>
+		<a href="https://lkml.org/lkml/2011/7/22/183">Linux-kernel thread where
+		I report this issue</a>.
+		<br><br>
+		Fixed by changeset 
+		<a href="http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=a8b0ca17b80e92faab46ee7179ba9e99ccb61233">
+		a8b0ca17b80e92faab46ee7179ba9e99ccb61233</a>
+		<br><br>
+		Also backported to some stable releases, 462fee3af72df0de7b60b96c525ffe8baf4db0f0.
+		<br><br>
+	</ul>
+
+<hr>
+
+<h3>Fixed in 2.6.39 (pre-dates perf_fuzzer)</h3>
+
+	<ul>
+	<li><b>CVE-2011-4611 : perf, powerpc</b>
+		<br><br>
+		Denial of service.
+		<br><br>
+		Fixed in 0837e3242c7
+		<br><br>
+	<li><b>CVE-2011-2521 : perf, x86: fix Intel fixed counters base initialization</b>
+		<br><br>
+		Denial of service
+		<br><br>
+		Introduced by 41bf498, fixed by fc66c5210ec2
+		<br><br>
+	<li><b>Inherit Bug</b>
+		<br><br>
+		Denial of service
+		<br><br>
+		With this bug you could quickly out-of-memory your system if your
+		program enabled the "inherit" option, counted at least two events,
+		and spawned threads.  
+		<br><br>
+		<a href="https://lkml.org/lkml/2011/3/11/411">Linux kernel thread where I report the issue</a>.
+		<br><br>
+		Fixed by changeset 
+		<a href="http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=38b435b16c36b0d863efcf3f07b34a6fac9873fd">
+		38b435b16c36b0d863efcf3f07b34a6fac9873fd</a>
+	<li><b>Task Context Scheduling Bug</b>
+		<br><br>
+		Denial of service
+		<br><br>
+		This bug is most noticable when using multiple threads.
+		The perfsuite "make -s check" test failure is what made me notice it.
+		Symptoms were hard system lockup.
+		<br><br>
+		Fixed by changeset 
+		<a href="http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=commit;h=ab711fe08297de1485fff0a366e6db8828cafd6a">
+		ab711fe08297de1485fff0a366e6db8828cafd6a</a>
+	</ul>
+
+<hr>
+
+<h3>Fixed in 2.6.37 (pre-dates perf_fuzzer)</h3>
+	<ul>
+	<li><b>CVE-2010-4169</b>
+		<br><br>
+		Denial of service.
+		<br><br>
+ 		Introduced by dab5855, fixed by 63bfd7384b1
+		<br><br>
+	</ul>
+
+<hr>
+
+<h3>Fixed in 2.6.32 (pre-dates perf_fuzzer)</h3>
+
+	<ul>
+	<li><b>CVE-2009-3234 Buffer overflow in the perf_copy_attr</b>
+		<br><br>
+		Local root exploit.
+		<br><br>
+		Fixed in b3e62e350
+		<br><br>
+	</ul>
+<hr>
+
+List of perf_event related CVEs.  Ones listed as ??? are likely found by
+a fuzzer but the info provided does not make this clear.
+<ul>
+<li>CVE-2017-6001 (???)
+<li>CVE-2017-0403 Android (???)
+<li>CVE-2016-6786 Android (???)
+<li>CVE-2016-6787 Android (???)
+<li>CVE-2016-3843 Qualcomm (???)
+<li>CVE-2016-3768 Qualcomm (???)
+<li>CVE-2016-0843 Qualcomm (???)
+<li>CVE-2016-0819 Qualcomm (likely perf_fuzzer)
+<li>CVE-2016-0805 Qualcomm (likely perf_fuzzer)
+<li>CVE-2015-8955 (perf_fuzzer)
+<li>CVE-2015-8963 (???)
+<li>CVE-2013-2930 (perf_fuzzer)
+<li>CVE 2013-4254 (perf_fuzzer)
+<li>CVE-2013-2094 (trinity)
+<li>CVE 2011-2918
+<li>CVE-2011-4611
+<li>CVE-2011-2521
+<li>CVE-2010-4169
+<li>CVE-2009-3234
+</ul>
+
+<hr>
+
+<a href="index.html">Back to the perf_fuzzer page</a>
+
+</body>
+</html>
+
+

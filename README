@@ -1,0 +1,71 @@
+The Perf Event Testsuite
+  by Vince Weaver   <vincent.weaver _at_ maine.edu>
+
+
+This series of test is meant to validate that the perf_event
+subsystem is working.
+
+
+QUICKSTART
+~~~~~~~~~~
+  1. run "make"
+  2. run "./run_tests.sh"
+
+  If a test fails you can run the individual test to get more info on
+  why.
+
+CROSS COMPILE
+~~~~~~~~~~~~~
+
+  1. make sure that the cross compiler toolchain is in PATH
+  2. run "make CROSS_COMPILE=<compiler name>"
+
+  e.g., "make CROSS_COMPILE=arm-linux-gnueabihf-"
+
+
+LAYOUT
+~~~~~~
+There are various subdirectories:
+
+   + crashes   -- these contain tests known to crash certain
+                  kernel versions from userspace.
+                  * USE CAUTION RUNNING THESE TESTS *
+
+   + exploits  -- perf_event code that can cause some sort of security exploit
+
+   + fuzzer    -- a fuzzer tool that tries to hit the extremes of
+                  the perf_event interface and find bugs in the kernel
+
+   + include   -- common include files
+
+   + lib       -- common library code
+
+   + papi      -- tests for the PAPI library.  Only compile/run
+                  these if you have PAPI installed
+
+   + perf_event_h -- an archive of perf_event.h files over the
+                     history of the interface.  Useful when
+                     figuring out when a feature was added
+
+   + results   -- results of ./run_tests.sh across kernel versions
+
+   + tests     -- all of the various tests live under here
+
+   + tools     -- various perf_event related tools
+
+WEBSITE
+~~~~~~~
+
+The most recent version of this code can be found here:
+
+   http://web.eece.maine.edu/~vweaver/projects/perf_events/validation/
+
+Even more recent code can be obtained from the git tree:
+
+   git clone git://github.com/deater/perf_event_tests
+
+
+---
+
+Vince
+17 September 2013

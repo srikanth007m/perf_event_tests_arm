@@ -1,0 +1,45 @@
+Instrumenting kernel:
+
+	use trace_printk()
+	trace_dump_stack(2);
+	
+	enable tracing inside of perf_event
+
+	in kernel/events/Makefile
+	remove
+	-ifdef CONFIG_FUNCTION_TRACER
+	-CFLAGS_REMOVE_core.o = -pg
+	-endif
+
+Running:
+	
+	run fuzzer.  Current known issues
+
+	./perf_fuzzer -t OCIRMQWPpAi -r 1392938876
+	./perf_fuzzer -t OCMQ -r 1393527691
+
+	suspend with control-Z
+	get pid
+
+
+	trace-cmd record -p function -e all -P 11492
+	trace-cmd report | less
+	trace-cmd report -R | less   (withough address remapping
+					which can hide issues, i.e.
+					segfault address in userspace)
+
+
+
+Trying to trace process plus idle thread (RCU release)
+
+ trace-cmd record -p function -e all -P 0 -P 31679
+
+
+trace-cmd record -p function -e all -c -F su vince -c "./perf_fuzzer -t OCIRMQWPFpAi -s 50000 -r 139870047"
+
+trace-cmd record -e kmem -e raw_syscalls -l 'perf*' -l 'x86*'
+
+trace-cmd record -e kmem -e raw_syscalls -p function -l '*perf*' -n 'perf_event_task_tick'
+
+trace-cmd record -e raw_syscalls -p function -l '*perf*' -n 'perf_event_task_tick' -l 'x86*' -l 'intel*'
+

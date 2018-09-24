@@ -1,0 +1,58 @@
+The Perf Event Testsuite
+  by Vince Weaver   <vincent.weaver _at_ maine.edu>
+
+
+This series of test is meant to validate that the perf_event
+subsystem is working.
+
+LAYOUT
+~~~~~~
+There are various subdirectories:
+
+   + attr_fields -- tests that check low-level perf_event functionality
+
+   + bugs      -- these contain tests for broken features of perf_events
+                  that a tool like PAPI has to work around.
+
+   + constraints -- check the perf_event event constraints codepath
+
+   + corner_cases -- these are tests that check unusual or uncommon
+                  perf_event functionality.  They might not affect
+                  common perf usage patterns but are still important
+                  to get right
+
+   + error_returns -- tests various cases to make sure the proper
+			error returns happen
+
+   + generalized_events -- tests that check the validity of the various
+                  perf_event generalized events, such as "instructions"
+                  or "cycles"
+
+   + ioctl     -- tests of perf_event ioctl calls
+
+   + multiplexing -- tests that check multiplexing functionality
+
+   + overflow  -- tests involving counter overflow functionality
+
+   + rdpmc     -- tests user-space counter access w/o syscall
+
+   + record_sample -- tests that check the functionality of sample
+                  recording
+
+   + sysfs      -- test the parsing of various perf_event related
+                   files under /sys/
+
+   + tracepoints -- test tracepoint events
+
+   + unfinished -- TODO
+
+   + utils	-- utilitiy tools
+
+   + unfinished -- unfinished tests
+
+   + x86_intel  -- tests specific to the x86 intel architecture
+
+---
+
+Vince
+18 December 2013

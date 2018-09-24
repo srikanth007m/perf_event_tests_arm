@@ -1,0 +1,27 @@
+md5sum the executable and store a copy, so can reproduce later even
+in the face of changing versions
+
+Try having the PERF_FLAG_FD_NO_GROUP and
+	PERF_FLAG_FD_OUTPUT flags work together.
+
+Try passing a fd over a socket
+
+Set breakpoint events on the mmap buffers?
+Randomly mmap() existing events?
+  - be sure to unmap once the event is destroyed
+
+Try unmapping random page in middle of mmap buffer?
+
+Forking -- make sure we clean up child threads?
+
+Attaching to more pids (?)
+
+For sysfs events, try also flipping a few random bits to try
+to catch corner cases.
+
++ ->mmap2 support
++ double check why cpu is never set to -1?
+
+Set relevant sample_stack_user flags.  If SAMPLE_STACK_USER set
+try setting varios believable sample_stack_user values.
+

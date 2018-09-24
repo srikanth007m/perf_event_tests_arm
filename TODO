@@ -1,0 +1,127 @@
++ Add KVM tests, specifically
+	PERF_RECORD_MISC_GUEST_KERNEL and PERF_RECORD_MISC_GUEST_USER events.
++ Test the new cycles field in LBR entries on Sandybridge
++ Test for new CONTEXT_SWITCH records
++ In sampling, be sure to handle the various sample_header values
+
++ Test for PERF_FLAG_FD_CLOEXEC
+
++ Fix up the test for PERF_IOC_PERIOD and if it takes place right away.
+
++ Add test for Fixed Counter 2 (retired instructions) being different.
+  Basically run 5 instructions events, compare results
+  
+
++ Add test for ring-buffer size of 0 or 1
+  (possibly causes kernel bug?)
+  
++ Add test for IVB constraints
+
+
++ Wakeup events not equal to 1
+
++ single-shot RT counts
+
++ the bug with overflow even after event closed
+
+
+PERF_FLAG_FD_OUTPUT
+PERF_FLAG_FD_NO_GROUP
+
+
+get perf cache-detection code going
+
+inherit?
+inherit and PERF_FORMAT_GROUP?
+
+
+document:
+  pinned flag?
+
+perf tests:
++ All generalized events
++ More multi-threaded test cases
++ More assembler code in the cache load/stores tests
+
+PAPI tests:
+ + Invert flag
+ + Max number of SW events
+
+
+From Phil:
+Do you guys have a test for:
+
+a) grouped, non-multiplexed counters (where you can read/start/stop on one FD)
+b) multiplexed, grouped counters
+c) the portion of perf_events that uses counter indexing (returns a [5] array).
+   (I'm not sure what this is useful for yet...sampling?)
+
+
+Will Deacon:
+
+If I try using perf with event groups on a mainline kernel, only the group
+leader counts:
+
+
+linaro@mashed-potato:~$ perf stat --no-scale -g -e task-clock -e cpu-clock -e cs
++-- ls
+hwb  linux
+
+ Performance counter stats for 'ls':
+
+         17.545541 task-clock                #    0.634 CPUs utilized
+          0.000000 cpu-clock
+                 0 cs                        #    0.000 M/sec
+
+       0.027684984 seconds time elapsed
+
+
+This is fixed by b79387ef ("perf: Fix enable_on_exec for sibling events")
+in -next (20111222) but I can't see this queued anywhere for 3.2 (I thought
+I might see it in -rc7).
+
+Is this going in for the final cut, or will groups just be borked until 3.3?
+
+How can this be a regression? Its always been like that. At worst its a
+broken new feature.
+
+Also, you really shouldn't set enable_on_exec on non group leaders,
+that's just daft. But yes that patch sorts it. Something like the below
+should too.
+
++ test guest exclude support
+  attr.exclude_{guest,host}
+
+
+
+commit a4f144ebbdf6f7807c477bce8e136047ed27321f
+Author: David Carrillo-Cisneros <davidcc@google.com>
+Date:   Wed Jun 1 12:33:05 2016 -0700
+
+    perf/core: Fix crash due to account/unaccount_sb_event() inconsistency
+    
+    unaccount_pmu_sb_event() did not check for attributes in event->attr
+    before calling detach_sb_event(), while account_pmu_event() did.
+    
+    This caused NULL pointer reference in cgroup events that did not
+    have any of the attributes checked by account_pmu_event().
+    
+    To trigger the bug just wait for a cgroup event to terminate, e.g.:
+    
+      $ mkdir /dev/cgroup/devices/test
+      $ perf stat -e cycles -a -G test sleep 0
+    
+    ... see crash ...
+
+
+
+
+Date: Wed, 14 Sep 2016 22:38:45 -0700
+From: Stephane Eranian 
+Subject: slow perf ioctl()
+
+Here is another thing I've run into lately having to do with
+ioctl(fd, PERF_IOC_REFRESH, 1) on self-monitoring thread.
+The ioctl() takes seconds to execute. I have not yet had the time
+to track down why.  Any of your tests exhibiting this problem?
+
